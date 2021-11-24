@@ -1,8 +1,5 @@
 import { Client } from '@notionhq/client';
-import dotenv from 'dotenv';
 import Bottleneck from 'bottleneck';
-
-dotenv.config();
 
 export const notion = new Client({ auth: process.env.NOTION_KEY });
 

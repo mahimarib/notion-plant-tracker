@@ -1,9 +1,6 @@
-import dotenv from 'dotenv';
 import moment from 'moment';
 import { getFrontPageSchedule } from './plantsTable.js';
 import * as blocks from './blocks.js';
-
-dotenv.config();
 
 const frontPageID = process.env.FRONT_PAGE_ID;
 
