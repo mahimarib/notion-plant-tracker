@@ -46,7 +46,7 @@ export async function updateLastWatered(pageID) {
         })
     );
     const plantName = getPlantName(response);
-    await addToLog(response.id, date);
+    addToLog(response.id, date);
     console.log(`edited: ${plantName}`);
 }
 
