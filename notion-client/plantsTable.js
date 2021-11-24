@@ -20,15 +20,14 @@ function getPlantName(plantObj) {
  * @returns {Object} key value pairs
  */
 export async function getPlantsMap() {
-    let map = {};
     const plants = await getPlants();
-    plants.forEach(plant => {
+    const map = plants.reduce((acc, plant) => {
         const name = getPlantName(plant);
-        map = {
-            ...map,
+        return {
+            ...acc,
             [name]: plant.id,
         };
-    });
+    }, {});
     return map;
 }
 
@@ -53,12 +52,14 @@ export async function updateLastWatered(pageID) {
 
 export async function getSchedule(ids) {
     const plants = (await getPlants()).filter(plant => ids.includes(plant.id));
-    const data = {};
-    plants.forEach(plant => {
+    const data = plants.reduce((acc, plant) => {
         const name = getPlantName(plant);
         const interval = plant.properties['Watering Interval (days)'].number;
-        data[interval] = data[interval] ? [...data[interval], name] : [name];
-    });
+        return {
+            ...acc,
+            [interval]: acc[interval] ? [...acc[interval], name] : [name],
+        };
+    }, {});
     return data;
 }
 
@@ -73,14 +74,14 @@ export async function getFrontPageSchedule() {
         else if (dateA > dateB) return 1;
         else return 0;
     });
-    const plantsDates = new Map();
-    plants.forEach(plant => {
+    const plantsDates = plants.reduce((map, plant) => {
         const date = plant.properties['Last Watered'].date.start;
-        if (plantsDates.has(date)) {
-            plantsDates.set(date, [...plantsDates.get(date), plant.id]);
+        if (map.has(date)) {
+            map.set(date, [...map.get(date), plant.id]);
         } else {
-            plantsDates.set(date, [plant.id]);
+            map.set(date, [plant.id]);
         }
-    });
+        return map;
+    }, new Map());
     return plantsDates;
 }
