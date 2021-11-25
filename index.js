@@ -1,4 +1,4 @@
-require('dotenv').config();
+import {} from 'dotenv/config';
 import express from 'express';
 import { plants } from './routes/plants.js';
 import { waterPlants } from './routes/waterPlants.js';
