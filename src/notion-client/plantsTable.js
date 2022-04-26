@@ -1,7 +1,7 @@
 import { notion, plantsTable, limiter } from './notion.js';
 import { addToLog } from './waterLog.js';
 
-async function getPlants() {
+export async function getPlants() {
     const response = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
@@ -21,7 +21,12 @@ function getPlantName(plantObj) {
  */
 export async function getPlantsMap() {
     const plants = await getPlants();
-    const map = plants.reduce((acc, plant) => {
+
+    const alivePlants = plants.filter(
+        plant => plant.properties['Status'].select.name === 'Alive'
+    );
+
+    const map = alivePlants.reduce((acc, plant) => {
         const name = getPlantName(plant);
         return {
             ...acc,
@@ -70,9 +75,7 @@ export async function getFrontPageSchedule() {
     plants.sort((a, b) => {
         const dateA = a.properties['Last Watered'].date.start;
         const dateB = b.properties['Last Watered'].date.start;
-        if (dateA < dateB) return -1;
-        else if (dateA > dateB) return 1;
-        else return 0;
+        return dateA - dateB;
     });
     const plantsDates = plants.reduce((map, plant) => {
         const date = plant.properties['Last Watered'].date.start;
