@@ -6,8 +6,7 @@ const router = Router();
 
 router.post('/:ids', (req, res) => {
     const ids = req.params.ids.split(':');
-    const plantsToUpdate = ids.map(id => updateLastWatered(id));
-    Promise.all(plantsToUpdate);
+    ids.forEach(id => updateLastWatered(id));
     updateFrontPage();
     res.status(200).send('watered plants!');
 });
