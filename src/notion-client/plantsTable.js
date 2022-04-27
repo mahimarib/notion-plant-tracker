@@ -7,7 +7,11 @@ export async function getPlants() {
             database_id: plantsTable.id,
         })
     );
-    return response.results;
+    const plants = response.results;
+    // filtering out plants that are dead.
+    return plants.filter(
+        plant => plant.properties['Status'].select.name === 'Alive'
+    );
 }
 
 function getPlantName(plantObj) {
@@ -22,11 +26,7 @@ function getPlantName(plantObj) {
 export async function getPlantsMap() {
     const plants = await getPlants();
 
-    const alivePlants = plants.filter(
-        plant => plant.properties['Status'].select.name === 'Alive'
-    );
-
-    const map = alivePlants.reduce((acc, plant) => {
+    const map = plants.reduce((acc, plant) => {
         const name = getPlantName(plant);
         return {
             ...acc,
