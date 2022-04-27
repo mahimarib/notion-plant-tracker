@@ -73,9 +73,9 @@ export async function getFrontPageSchedule() {
         plant => plant.properties['Last Watered'].date
     );
     plants.sort((a, b) => {
-        const dateA = a.properties['Last Watered'].date.start;
-        const dateB = b.properties['Last Watered'].date.start;
-        return dateB - dateA;
+        const dateA = new Date(a.properties['Last Watered'].date.start);
+        const dateB = new Date(b.properties['Last Watered'].date.start);
+        return dateA - dateB;
     });
     const plantsDates = plants.reduce((map, plant) => {
         const date = plant.properties['Last Watered'].date.start;
