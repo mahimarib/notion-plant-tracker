@@ -17,5 +17,5 @@ export const waterLog = {
 };
 
 export const limiter = new Bottleneck({
-    minTime: 333,
+    minTime: 500,
 });
