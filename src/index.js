@@ -14,9 +14,10 @@ app.use('/water-plants', waterPlants);
 const port = process.env.PORT;
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+    console.log(`plant server running on http://zero-w.local:${port}`);
 });
 
+// runs every midnight
 cron.schedule('0 0 0 * * *', () => {
     console.log('updating front page');
     updateFrontPage();
