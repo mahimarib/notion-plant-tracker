@@ -8,6 +8,7 @@ export const plantsTable = {
     nameID: process.env.PLANTS_TABLE_NAME_ID,
     dateID: process.env.PLANTS_TABLE_DATE_ID,
     intervalID: process.env.PLANTS_TABLE_INTERVAL_ID,
+    statusID: process.env.PLANTS_TABLE_STATUS_ID,
 };
 
 export const waterLog = {
@@ -17,5 +18,6 @@ export const waterLog = {
 };
 
 export const limiter = new Bottleneck({
+    maxConcurrent: 1,
     minTime: 333,
 });
