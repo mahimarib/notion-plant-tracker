@@ -19,9 +19,12 @@ export async function updateFrontPage() {
     const blocksToAdd = [];
 
     scheduleMap.forEach((ids, date) => {
-        const headingBlock = blocks.getHeadingBlock(
-            `Watered ${moment(date).startOf('day').fromNow()}`
-        );
+        const dateObj = moment(date);
+        const text =
+            moment().date() === dateObj.date()
+                ? 'today'
+                : dateObj.startOf('day').fromNow();
+        const headingBlock = blocks.getHeadingBlock(`Watered ${text}`);
         blocksToAdd.push(headingBlock);
         const bulletBlocks = ids.map(id => blocks.getBulletPlantLink(id));
         blocksToAdd.push(...bulletBlocks);
