@@ -1,17 +1,16 @@
 import { limiter, notion } from './notion.js';
 
-export async function deleteBlock(id) {
-    const response = await limiter.schedule(() =>
+export function deleteBlock(id) {
+    return limiter.schedule(() =>
         notion.blocks.delete({
             block_id: id,
         })
     );
-    return response;
 }
 
-export async function deleteBlocks(ids) {
+export function deleteBlocks(ids) {
     const deletedIds = ids.map(id => deleteBlock(id));
-    return await Promise.all(deletedIds);
+    return Promise.all(deletedIds);
 }
 
 async function getAllChildren(parentID) {
@@ -24,13 +23,12 @@ async function getAllChildren(parentID) {
 }
 
 export async function getAllChildrenIDs(parentBlockID) {
-    const ids = (await getAllChildren(parentBlockID)).map(block => block.id);
-    return ids;
+    return (await getAllChildren(parentBlockID)).map(block => block.id);
 }
 
 export async function deleteAllChildren(parentID) {
     const childrenIDs = await getAllChildrenIDs(parentID);
-    await deleteBlocks(childrenIDs);
+    return deleteBlocks(childrenIDs);
 }
 
 export async function deleteAllChildrenTypes(parentID, types) {
@@ -39,7 +37,7 @@ export async function deleteAllChildrenTypes(parentID, types) {
         types.includes(block.type)
     );
     const ids = matchedType.map(block => block.id);
-    await deleteBlocks(ids);
+    return deleteBlocks(ids);
 }
 
 export function getHeadingBlock(text) {
@@ -76,11 +74,10 @@ export function getBulletPlantLink(plantPageID) {
 }
 
 export async function addBlocksToParent(parentID, blocks) {
-    const response = await limiter.schedule(() =>
+    return limiter.schedule(() =>
         notion.blocks.children.append({
             block_id: parentID,
             children: blocks,
         })
     );
-    return response;
 }

@@ -6,7 +6,7 @@ const frontPageID = process.env.FRONT_PAGE_ID;
 
 export async function updateFrontPage() {
     try {
-        await blocks.deleteAllChildrenTypes(frontPageID, [
+        blocks.deleteAllChildrenTypes(frontPageID, [
             'paragraph',
             'heading_3',
             'bulleted_list_item',
@@ -27,5 +27,5 @@ export async function updateFrontPage() {
         blocksToAdd.push(...bulletBlocks);
     });
 
-    await blocks.addBlocksToParent(frontPageID, blocksToAdd);
+    return blocks.addBlocksToParent(frontPageID, blocksToAdd);
 }

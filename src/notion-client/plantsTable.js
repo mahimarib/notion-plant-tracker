@@ -2,12 +2,11 @@ import { notion, plantsTable, limiter } from './notion.js';
 import { addToLog } from './waterLog.js';
 
 async function getPlants() {
-    const response = await limiter.schedule(() =>
+    const { results: plants } = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
         })
     );
-    const plants = response.results;
     // filtering out plants that are dead.
     return plants.filter(
         plant => plant.properties['Status'].select.name === 'Alive'
@@ -38,7 +37,7 @@ export async function getPlantsMap() {
 
 export async function updateLastWatered(pageID) {
     const [date] = new Date().toISOString().split('T');
-    const response = await limiter.schedule(() =>
+    const plantPage = await limiter.schedule(() =>
         notion.pages.update({
             page_id: pageID,
             properties: {
@@ -50,9 +49,9 @@ export async function updateLastWatered(pageID) {
             },
         })
     );
-    const plantName = getPlantName(response);
-    addToLog(response.id, date);
+    const plantName = getPlantName(plantPage);
     console.log(`edited: ${plantName}`);
+    return addToLog(plantPage.id, date);
 }
 
 export async function getSchedule(ids) {

@@ -1,7 +1,7 @@
 import { limiter, notion, waterLog } from './notion.js';
 
-export async function addToLog(id, date) {
-    const response = await limiter.schedule(() =>
+export function addToLog(id, date) {
+    return limiter.schedule(() =>
         notion.pages.create({
             parent: {
                 database_id: waterLog.id,
@@ -32,5 +32,4 @@ export async function addToLog(id, date) {
             },
         })
     );
-    return response;
 }
