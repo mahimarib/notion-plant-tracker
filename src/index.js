@@ -1,8 +1,8 @@
 import {} from 'dotenv/config';
 import express from 'express';
+import cron from 'node-cron';
 import { plants } from './routes/plants.js';
 import { waterPlants } from './routes/waterPlants.js';
-import cron from 'node-cron';
 import { updateFrontPage } from './notion-client/frontPage.js';
 
 const app = express();
