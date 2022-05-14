@@ -14,8 +14,8 @@ export async function updateFrontPage() {
     } catch (error) {
         console.log(`unable to delete block.`);
     }
-    const scheduleMap = await getFrontPageSchedule();
 
+    const scheduleMap = await getFrontPageSchedule();
     const blocksToAdd = [];
 
     scheduleMap.forEach((ids, date) => {
