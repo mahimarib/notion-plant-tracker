@@ -16,7 +16,7 @@ If unable to view the script check the [screenshots](/assets/script-screenshots/
 
 **GET** 
 
-a JSON object containng a map of my plants which the shortcuts will use to ask the user to select which plants watered. The IDs are used to send a POST request for watered plants.
+Returns a JSON object containing a map of my plants. The shortcuts script will use the list to ask the user to select which plants watered. The IDs are used to send a POST request for watered plants.
 
 ```json
 {
@@ -32,7 +32,7 @@ a JSON object containng a map of my plants which the shortcuts will use to ask t
 
 **GET** 
 
-a JSON object containing a key value pair of # of day -> array of plants. It is in this format because it is easier to consume on apple shortcuts. It is then used to set remainders on my phone for the next time to water it.
+Returns a JSON object containing a key value pair of # of day -> array of plants. It is in this format because it is easier to consume on apple shortcuts. It is then used to set reminders on my phone.
 
 ```json
 {
@@ -54,12 +54,27 @@ a JSON object containing a key value pair of # of day -> array of plants. It is 
 
 **POST** 
 
-based on the selected plants, the shortcut sends a POST request to the server to update when these plants were watered.
+Based on the selected plants, the shortcut sends a POST request to the server to update when these plants were last watered.
 
 
 ## Functionality
+In my notion page I needed a front page where I can quickly look at when my plants were last watered. I previously had it in the format:
 
-Because relative dates arehuman readible, and easier to guage how long it has been since a plant has been last watered I included them. But that means I needed to upate the front page everyday so the dates make sense and here is an example of it running using node-cron.
+>Watered on 4/11/22
+>- Elephant Bush
+>- Jade Plant
+>Watered on 4/23/22
+>- Ghost Plant
+
+However this format didn't let me quickly figure out how long it's been since they were last watered. I needed a more human readible format:
+
+>Watered 5 days ago
+>- Elephant Bush
+>- Jade Plant
+>Watered 3 days ago
+>- Ghost Plant
+
+In order for this format to be up to date, I used node-cron to run a cron job that updates the front page every midnight. Here is an example of it running:
 
 ![front page updating](/assets/front-page.gif)
 
