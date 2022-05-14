@@ -63,6 +63,7 @@ In my notion page I needed a front page where I can quickly look at when my plan
 >Watered on 4/11/22
 >- Elephant Bush
 >- Jade Plant
+>
 >Watered on 4/23/22
 >- Ghost Plant
 
@@ -71,6 +72,7 @@ However this format didn't let me quickly figure out how long it's been since th
 >Watered 5 days ago
 >- Elephant Bush
 >- Jade Plant
+>
 >Watered 3 days ago
 >- Ghost Plant
 
