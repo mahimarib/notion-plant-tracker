@@ -18,6 +18,10 @@ function getPlantName(plantObj) {
     return name;
 }
 
+function getPlantDate(plantObj) {
+    return plantObj.properties['Last Watered'].date.start;
+}
+
 /**
  * Returns a key value pair of the plant names and the id.
  * @returns {Object} key value pairs
@@ -51,7 +55,7 @@ export async function updateLastWatered(pageID) {
     );
     const plantName = getPlantName(plantPage);
     console.log(`edited: ${plantName}`);
-    return addToLog(plantPage.id, date);
+    addToLog(plantPage.id, date);
 }
 
 export async function getSchedule(ids) {
@@ -72,12 +76,12 @@ export async function getFrontPageSchedule() {
         plant => plant.properties['Last Watered'].date
     );
     plants.sort((a, b) => {
-        const dateA = new Date(a.properties['Last Watered'].date.start);
-        const dateB = new Date(b.properties['Last Watered'].date.start);
+        const dateA = new Date(getPlantDate(a));
+        const dateB = new Date(getPlantDate(b));
         return dateA - dateB;
     });
     const plantsDates = plants.reduce((map, plant) => {
-        const date = plant.properties['Last Watered'].date.start;
+        const date = getPlantDate(plant);
         if (map.has(date)) {
             map.set(date, [...map.get(date), plant.id]);
         } else {
