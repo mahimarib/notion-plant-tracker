@@ -80,3 +80,28 @@ In order for this format to be up to date, I used node-cron to run a cron job th
 
 Due to the limitations of the Notion API I have to make a request for every 'block' I want to delete. I decided to use bottleneck.js to make sure I am only sending a max of 3 requests per second to abide by the limit. Since some tasks may take longer I made sure to only have one one concurrent limiter.
 
+## Plant Server Service
+
+In order for my server to run continously and on boot I needed to register a service file on systemd
+
+```service
+[Unit]
+Description=nodejs express server to keep track of plants
+After=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Environment=NODE_VERSION=14
+WorkingDirectory=/home/pi/programs/notion-plant-tracker
+ExecStartPre=/usr/bin/git fetch --all
+ExecStartPre=/usr/bin/git reset --hard origin/main
+ExecStartPre=/home/pi/.nvm/nvm-exec npm install
+ExecStart=/home/pi/.nvm/nvm-exec npm run start
+Restart=always
+RestartSec=3
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target
+```
