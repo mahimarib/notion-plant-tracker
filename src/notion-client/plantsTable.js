@@ -75,6 +75,7 @@ export async function getFrontPageSchedule() {
     const plants = (await getPlants()).filter(
         plant => plant.properties['Last Watered'].date
     );
+    // sort oldest to newest
     plants.sort((a, b) => {
         const dateA = new Date(getPlantDate(a));
         const dateB = new Date(getPlantDate(b));
