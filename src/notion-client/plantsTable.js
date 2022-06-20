@@ -1,5 +1,6 @@
+import moment from 'moment';
 import { notion, plantsTable, limiter } from './notion.js';
-import { addToLog } from './waterLog.js';
+import { addToLog, WateringMethod } from './waterLog.js';
 
 async function getPlants() {
     const { results: plants } = await limiter.schedule(() =>
@@ -40,7 +41,7 @@ export async function getPlantsMap() {
 }
 
 export async function updateLastWatered(pageID) {
-    const [date] = new Date().toISOString().split('T');
+    const date = moment().format('YYYY-MM-DD');
     const plantPage = await limiter.schedule(() =>
         notion.pages.update({
             page_id: pageID,
@@ -55,7 +56,7 @@ export async function updateLastWatered(pageID) {
     );
     const plantName = getPlantName(plantPage);
     console.log(`edited: ${plantName}`);
-    addToLog(plantPage.id, date);
+    addToLog(plantPage.id, date, WateringMethod.WateringCan);
 }
 
 export async function getSchedule(ids) {

@@ -15,6 +15,11 @@ export const waterLog = {
     id: process.env.WATER_LOG_ID,
     nameID: process.env.WATER_LOG_NAME_ID,
     dateID: process.env.WATER_LOG_DATE_ID,
+    methodID: process.env.WATER_LOG_METHOD_ID,
+    select: {
+        wateringCan: process.env.WATERING_CAN_ID,
+        rain: process.env.RAIN_ID,
+    },
 };
 
 export const limiter = new Bottleneck({

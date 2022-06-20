@@ -1,6 +1,11 @@
 import { limiter, notion, waterLog } from './notion.js';
 
-export function addToLog(id, date) {
+export const WateringMethod = {
+    Rain: waterLog.select.rain,
+    WateringCan: waterLog.select.wateringCan,
+};
+
+export function addToLog(id, date, method) {
     return limiter.schedule(() =>
         notion.pages.create({
             parent: {
@@ -27,6 +32,11 @@ export function addToLog(id, date) {
                 [waterLog.dateID]: {
                     date: {
                         start: date,
+                    },
+                },
+                [waterLog.methodID]: {
+                    select: {
+                        id: method,
                     },
                 },
             },
