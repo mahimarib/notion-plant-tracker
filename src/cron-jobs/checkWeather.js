@@ -16,8 +16,6 @@ async function jobToRun() {
     const minsOfRain = weatherData.minutely.filter(
         min => min.precipitation > 0
     ).length;
-    console.log({ minsOfRain });
-    console.log(isRaining(weatherData.current.weather[0].id));
     if (isRaining(weatherData.current.weather.id) || minsOfRain >= 10) {
         const plants = await getPlantsOutside();
         plants.forEach(plant => {
