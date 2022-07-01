@@ -22,6 +22,6 @@ const jobFiles = fs
     .filter(file => file.endsWith('.js'));
 
 jobFiles.forEach(async file => {
-    const cronJob = await import(`./cron-jobs/${file}`);
-    cron.schedule(cronJob.field, cronJob.jobToRun);
+    const { field, jobToRun } = await import(`./cron-jobs/${file}`);
+    cron.schedule(field, jobToRun);
 });
