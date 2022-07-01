@@ -44,7 +44,7 @@ export function getHeadingBlock(text) {
     return {
         type: 'heading_3',
         heading_3: {
-            text: [
+            rich_text: [
                 {
                     type: 'text',
                     text: {
@@ -60,7 +60,7 @@ export function getBulletPlantLink(plantPageID) {
     return {
         type: 'bulleted_list_item',
         bulleted_list_item: {
-            text: [
+            rich_text: [
                 {
                     type: 'mention',
                     mention: {
