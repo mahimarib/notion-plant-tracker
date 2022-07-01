@@ -2,6 +2,7 @@ import {} from 'dotenv/config';
 import express from 'express';
 import cron from 'node-cron';
 import fs from 'node:fs';
+import { page } from './routes/page.js';
 import { plants } from './routes/plants.js';
 import { waterPlants } from './routes/waterPlants.js';
 
@@ -10,6 +11,7 @@ const app = express();
 app.use(express.json());
 app.use('/plants', plants);
 app.use('/water-plants', waterPlants);
+app.use('/page', page);
 
 const port = process.env.PORT;
 
