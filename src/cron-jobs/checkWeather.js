@@ -18,7 +18,7 @@ async function jobToRun() {
     ).length;
     console.log({ minsOfRain });
     console.log(isRaining(weatherData.current.weather[0].id));
-    if (isRaining(weatherData.current.weather.id) && minsOfRain >= 10) {
+    if (isRaining(weatherData.current.weather.id) || minsOfRain >= 10) {
         const plants = await getPlantsOutside();
         plants.forEach(plant => {
             // if not watered today
