@@ -1,17 +1,46 @@
 import moment from 'moment';
 import { notion, plantsTable, limiter } from './notion.js';
-import { addToLog, WateringMethod } from './waterLog.js';
+import { addToLog } from './waterLog.js';
 
 async function getPlants() {
     const { results: plants } = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
+            // only getting plants that are alive
+            filter: {
+                property: 'Status',
+                select: {
+                    equals: 'Alive',
+                },
+            },
         })
     );
-    // filtering out plants that are dead.
-    return plants.filter(
-        plant => plant.properties['Status'].select.name === 'Alive'
+    return plants;
+}
+
+export async function getPlantsOutside() {
+    const { results: plants } = await limiter.schedule(() =>
+        notion.databases.query({
+            database_id: plantsTable.id,
+            filter: {
+                and: [
+                    {
+                        property: 'Status',
+                        select: {
+                            equals: 'Alive',
+                        },
+                    },
+                    {
+                        property: 'Location',
+                        select: {
+                            equals: 'Backyard',
+                        },
+                    },
+                ],
+            },
+        })
     );
+    return plants;
 }
 
 function getPlantName(plantObj) {
@@ -19,7 +48,7 @@ function getPlantName(plantObj) {
     return name;
 }
 
-function getPlantDate(plantObj) {
+export function getPlantDate(plantObj) {
     return plantObj.properties['Last Watered'].date.start;
 }
 
@@ -40,7 +69,7 @@ export async function getPlantsMap() {
     return map;
 }
 
-export async function updateLastWatered(pageID) {
+export async function updateLastWatered(pageID, method) {
     const date = moment().format('YYYY-MM-DD');
     const plantPage = await limiter.schedule(() =>
         notion.pages.update({
@@ -56,7 +85,7 @@ export async function updateLastWatered(pageID) {
     );
     const plantName = getPlantName(plantPage);
     console.log(`edited: ${plantName}`);
-    addToLog(plantPage.id, date, WateringMethod.WateringCan);
+    addToLog(plantPage.id, date, method);
 }
 
 export async function getSchedule(ids) {
