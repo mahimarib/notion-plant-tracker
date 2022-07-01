@@ -9,17 +9,18 @@ import { WateringMethod } from '../notion-client/waterLog.js';
 import { getWeather, isRaining } from '../weatherClient.js';
 
 // runs every hour
-const field = '0 0 * * * *';
+const field = '0 * * * *';
 
 async function jobToRun() {
     const weatherData = await getWeather();
     const minsOfRain = weatherData.minutely.filter(
-        min => min.precipitation > 0
+        // precipitation more than 20%
+        min => min.precipitation > 20
     ).length;
-    if (isRaining(weatherData.current.weather.id) || minsOfRain >= 10) {
+    if (isRaining(weatherData.current.weather[0].id) || minsOfRain >= 10) {
         const plants = await getPlantsOutside();
         plants.forEach(plant => {
-            // if not watered today
+            // if not watered today already
             if (!moment(getPlantDate(plant)).isSame(moment(), 'day')) {
                 updateLastWatered(plant.id, WateringMethod.Rain);
             }
