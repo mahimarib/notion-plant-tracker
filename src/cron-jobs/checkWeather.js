@@ -6,18 +6,15 @@ import {
     updateLastWatered,
 } from '../notion-client/plantsTable.js';
 import { WateringMethod } from '../notion-client/waterLog.js';
-import { getWeather, isRaining } from '../weatherClient.js';
+import { getMinsOfRain, getWeather, isRaining } from '../weatherClient.js';
 
 // runs every hour
 const field = '0 * * * *';
 
 async function jobToRun() {
     const weatherData = await getWeather();
-    const minsOfRain = weatherData.minutely.filter(
-        // precipitation more than 20%
-        min => min.precipitation > 20
-    ).length;
-    if (isRaining(weatherData.current.weather[0].id) || minsOfRain >= 10) {
+    const minsOfRain = getMinsOfRain(weatherData);
+    if (isRaining(weatherData) || minsOfRain >= 10) {
         const plants = await getPlantsOutside();
         plants.forEach(plant => {
             // if not watered today already

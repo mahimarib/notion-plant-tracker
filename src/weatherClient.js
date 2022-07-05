@@ -13,8 +13,21 @@ export async function getWeather() {
     return data;
 }
 
-export function isRaining(id) {
+export function getMinsOfRain(data, percent = 0.15) {
+    return data.minutely.filter(
+        // precipitation more than 15%
+        min => min.precipitation > percent
+    ).length;
+}
+
+export function isRaining(data) {
+    const id = data.current.weather[0].id;
     const firstDigitStr = String(id)[0];
     const num = Number(firstDigitStr);
     return [2, 3, 5].includes(num);
+}
+
+export function getMaxPrecipitation(data) {
+    const values = data.minutely.map(m => m.precipitation);
+    return Math.max(...values);
 }
