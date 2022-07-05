@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import { page } from './routes/page.js';
 import { plants } from './routes/plants.js';
 import { waterPlants } from './routes/waterPlants.js';
+import { weather } from './routes/weather.js';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use('/plants', plants);
 app.use('/water-plants', waterPlants);
 app.use('/page', page);
+app.use('/weather', weather);
 
 const port = process.env.PORT;
 
