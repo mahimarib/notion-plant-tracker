@@ -2,7 +2,7 @@ import moment from 'moment';
 import { notion, plantsTable, limiter } from './notion.js';
 import { addToLog } from './waterLog.js';
 
-async function getPlants() {
+export async function getPlants() {
     const { results: plants } = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
@@ -33,7 +33,7 @@ export async function getPlantsOutside() {
                     {
                         property: 'Location',
                         select: {
-                            equals: 'Backyard',
+                            equals: 'backyard',
                         },
                     },
                 ],
@@ -43,7 +43,7 @@ export async function getPlantsOutside() {
     return plants;
 }
 
-function getPlantName(plantObj) {
+export function getPlantName(plantObj) {
     const [{ plain_text: name }] = plantObj.properties.Name.title;
     return name;
 }
