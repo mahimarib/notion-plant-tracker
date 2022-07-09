@@ -1,8 +1,8 @@
 import { limiter, notion, waterLog } from './notion.js';
 
 export const WateringMethod = {
-    Rain: waterLog.select.rain,
-    WateringCan: waterLog.select.wateringCan,
+    Rain: waterLog.method.select.rain,
+    WateringCan: waterLog.method.select.wateringCan,
 };
 
 export function addToLog(id, date, method) {
@@ -34,7 +34,7 @@ export function addToLog(id, date, method) {
                         start: date,
                     },
                 },
-                [waterLog.methodID]: {
+                [waterLog.method.id]: {
                     select: {
                         id: method,
                     },

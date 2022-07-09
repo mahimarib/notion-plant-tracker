@@ -8,9 +8,9 @@ export async function getPlants() {
             database_id: plantsTable.id,
             // only getting plants that are alive
             filter: {
-                property: 'Status',
+                property: plantsTable.status.id,
                 select: {
-                    equals: 'Alive',
+                    equals: 'alive',
                 },
             },
         })
@@ -25,13 +25,13 @@ export async function getPlantsOutside() {
             filter: {
                 and: [
                     {
-                        property: 'Status',
+                        property: plantsTable.status.id,
                         select: {
-                            equals: 'Alive',
+                            equals: 'alive',
                         },
                     },
                     {
-                        property: 'Location',
+                        property: plantsTable.location.id,
                         select: {
                             equals: 'backyard',
                         },
