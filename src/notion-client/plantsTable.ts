@@ -1,8 +1,12 @@
 import moment from 'moment';
-import { notion, plantsTable, limiter } from './notion.js';
-import { addToLog } from './waterLog.js';
+import { addToLog, WateringMethod } from './waterLog.js';
+import { limiter, notion, plantsTable } from './notion.js';
+import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 
-export async function getPlants() {
+type Page = QueryDatabaseResponse["results"][number] &
+    { properties?: Record<string, any> };
+
+export async function getPlants(): Promise<Page[]> {
     const { results: plants } = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
@@ -18,7 +22,7 @@ export async function getPlants() {
     return plants;
 }
 
-export async function getPlantsOutside() {
+export async function getPlantsOutside(): Promise<Page[]> {
     const { results: plants } = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
@@ -43,12 +47,12 @@ export async function getPlantsOutside() {
     return plants;
 }
 
-export function getPlantName(plantObj) {
+export function getPlantName(plantObj: Page) {
     const [{ plain_text: name }] = plantObj.properties.Name.title;
     return name;
 }
 
-export function getPlantDate(plantObj) {
+export function getPlantDate(plantObj: Page) {
     return plantObj.properties['Last Watered'].date.start;
 }
 
@@ -59,7 +63,7 @@ export function getPlantDate(plantObj) {
 export async function getPlantsMap() {
     const plants = await getPlants();
 
-    const map = plants.reduce((acc, plant) => {
+    const map: Record<string, string> = plants.reduce((acc, plant) => {
         const name = getPlantName(plant);
         return {
             ...acc,
@@ -69,7 +73,7 @@ export async function getPlantsMap() {
     return map;
 }
 
-export async function updateLastWatered(pageID, method) {
+export async function updateLastWatered(pageID: string, method: WateringMethod) {
     const date = moment().format('YYYY-MM-DD');
     const plantPage = await limiter.schedule(() =>
         notion.pages.update({
@@ -88,9 +92,9 @@ export async function updateLastWatered(pageID, method) {
     addToLog(plantPage.id, date, method);
 }
 
-export async function getSchedule(ids) {
-    const plants = (await getPlants()).filter(plant => ids.includes(plant.id));
-    const data = plants.reduce((acc, plant) => {
+export async function getSchedule(ids: string[]) {
+    const plants: Page[] = (await getPlants()).filter((plant: Page) => ids.includes(plant.id));
+    const data: Record<string, string[]> = plants.reduce((acc, plant) => {
         const name = getPlantName(plant);
         const interval = plant.properties['Watering Interval (days)'].number;
         return {
@@ -103,13 +107,13 @@ export async function getSchedule(ids) {
 
 export async function getFrontPageSchedule() {
     const plants = (await getPlants()).filter(
-        plant => plant.properties['Last Watered'].date
+        plant => (plant).properties['Last Watered'].date
     );
     // sort oldest to newest
     plants.sort((a, b) => {
-        const dateA = new Date(getPlantDate(a));
-        const dateB = new Date(getPlantDate(b));
-        return dateA - dateB;
+        const dateA: Date = new Date(getPlantDate(a));
+        const dateB: Date = new Date(getPlantDate(b));
+        return dateA.getTime() - dateB.getTime();
     });
     const plantsDates = plants.reduce((map, plant) => {
         const date = getPlantDate(plant);
@@ -119,6 +123,6 @@ export async function getFrontPageSchedule() {
             map.set(date, [plant.id]);
         }
         return map;
-    }, new Map());
+    }, new Map<string, string[]>());
     return plantsDates;
 }

@@ -16,7 +16,7 @@ export async function updateFrontPage() {
     }
 
     const scheduleMap = await getFrontPageSchedule();
-    const blocksToAdd = [];
+    const blocksToAdd: blocks.Block[] = [];
 
     scheduleMap.forEach((ids, date) => {
         const dateObj = moment(date);

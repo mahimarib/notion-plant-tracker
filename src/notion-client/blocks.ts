@@ -1,6 +1,9 @@
+import { AppendBlockChildrenParameters } from '@notionhq/client/build/src/api-endpoints';
 import { limiter, notion } from './notion.js';
 
-export function deleteBlock(id) {
+export type Block = AppendBlockChildrenParameters["children"][number];
+
+export function deleteBlock(id: string) {
     return limiter.schedule(() =>
         notion.blocks.delete({
             block_id: id,
@@ -8,12 +11,12 @@ export function deleteBlock(id) {
     );
 }
 
-export function deleteBlocks(ids) {
+export function deleteBlocks(ids: string[]) {
     const deletedIds = ids.map(id => deleteBlock(id));
     return Promise.all(deletedIds);
 }
 
-async function getAllChildren(parentID) {
+async function getAllChildren(parentID: string) {
     const { results } = await limiter.schedule(() =>
         notion.blocks.children.list({
             block_id: parentID,
@@ -22,25 +25,25 @@ async function getAllChildren(parentID) {
     return results;
 }
 
-export async function getAllChildrenIDs(parentBlockID) {
+export async function getAllChildrenIDs(parentBlockID: string) {
     return (await getAllChildren(parentBlockID)).map(block => block.id);
 }
 
-export async function deleteAllChildren(parentID) {
+export async function deleteAllChildren(parentID: string) {
     const childrenIDs = await getAllChildrenIDs(parentID);
     return deleteBlocks(childrenIDs);
 }
 
-export async function deleteAllChildrenTypes(parentID, types) {
+export async function deleteAllChildrenTypes(parentID: string, types: string[]) {
     const blockChildren = await getAllChildren(parentID);
     const matchedType = blockChildren.filter(block =>
-        types.includes(block.type)
+        types.includes((block as any).type)
     );
     const ids = matchedType.map(block => block.id);
     return deleteBlocks(ids);
 }
 
-export function getHeadingBlock(text) {
+export function getHeadingBlock(text: string): Block {
     return {
         type: 'heading_3',
         heading_3: {
@@ -56,7 +59,7 @@ export function getHeadingBlock(text) {
     };
 }
 
-export function getBulletPlantLink(plantPageID) {
+export function getBulletPlantLink(plantPageID: string): Block {
     return {
         type: 'bulleted_list_item',
         bulleted_list_item: {
@@ -64,7 +67,6 @@ export function getBulletPlantLink(plantPageID) {
                 {
                     type: 'mention',
                     mention: {
-                        type: 'page',
                         page: { id: plantPageID },
                     },
                 },
@@ -73,7 +75,7 @@ export function getBulletPlantLink(plantPageID) {
     };
 }
 
-export async function addBlocksToParent(parentID, blocks) {
+export async function addBlocksToParent(parentID: string, blocks: Block[]) {
     return limiter.schedule(() =>
         notion.blocks.children.append({
             block_id: parentID,

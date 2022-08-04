@@ -16,7 +16,7 @@ import {
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
     const weatherData = await getWeather();
     const data = {
         ...weatherData.current,
@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
     res.status(200).json(data);
 });
 
-router.post('/update', async (req, res) => {
+router.post('/update', async (_req, res) => {
     const weatherData = await getWeather();
     const minsOfRain = getMinsOfRain(weatherData);
     if (isRaining(weatherData) || minsOfRain >= 10) {
