@@ -13,5 +13,5 @@
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "node"
     },
-    "include": ["src/**/*.ts", "./.env"]
+    "include": ["src/**/*.ts"]
 }
