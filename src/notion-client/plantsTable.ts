@@ -3,10 +3,10 @@ import { addToLog, WateringMethod } from './waterLog.js';
 import { limiter, notion, plantsTable } from './notion.js';
 import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 
-type Page = QueryDatabaseResponse["results"][number] &
-    { properties?: Record<string, any> };
+export type Page = Extract<QueryDatabaseResponse['results'][number], { parent: {}}>;
+export type PageProperty<T> = Extract<Page['properties'][string], { type: T }>;
 
-export async function getPlants(): Promise<Page[]> {
+export async function getPlants() {
     const { results: plants } = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
@@ -22,7 +22,7 @@ export async function getPlants(): Promise<Page[]> {
     return plants;
 }
 
-export async function getPlantsOutside(): Promise<Page[]> {
+export async function getPlantsOutside() {
     const { results: plants } = await limiter.schedule(() =>
         notion.databases.query({
             database_id: plantsTable.id,
@@ -47,24 +47,26 @@ export async function getPlantsOutside(): Promise<Page[]> {
     return plants;
 }
 
-export function getPlantName(plantObj: Page) {
-    const [{ plain_text: name }] = plantObj.properties.Name.title;
+export function getPlantName(plantObj: Page): string {
+    const prop = plantObj.properties['Name'] as PageProperty<'title'>;
+    const [{ plain_text: name }] = prop.title;
     return name;
 }
 
 export function getPlantDate(plantObj: Page) {
-    return plantObj.properties['Last Watered'].date.start;
+    const prop = plantObj.properties['Last Watered'] as PageProperty<'date'>;
+    return prop.date.start;
 }
 
 /**
  * Returns a key value pair of the plant names and the id.
- * @returns {Object} key value pairs
+ * @returns {Promise<Record<string,string>>} key value pairs
  */
-export async function getPlantsMap() {
+export async function getPlantsMap(): Promise<Record<string,string>> {
     const plants = await getPlants();
 
-    const map: Record<string, string> = plants.reduce((acc, plant) => {
-        const name = getPlantName(plant);
+    const map = plants.reduce((acc, plant) => {
+        const name = getPlantName(plant as Page);
         return {
             ...acc,
             [name]: plant.id,
@@ -87,16 +89,17 @@ export async function updateLastWatered(pageID: string, method: WateringMethod) 
             },
         })
     );
-    const plantName = getPlantName(plantPage);
+    const plantName = getPlantName(plantPage as Page);
     console.log(`edited: ${plantName}`);
     addToLog(plantPage.id, date, method);
 }
 
 export async function getSchedule(ids: string[]) {
-    const plants: Page[] = (await getPlants()).filter((plant: Page) => ids.includes(plant.id));
+    const plants: Page[] = (await getPlants() as Page[]).filter((plant: Page) => ids.includes(plant.id));
     const data: Record<string, string[]> = plants.reduce((acc, plant) => {
         const name = getPlantName(plant);
-        const interval = plant.properties['Watering Interval (days)'].number;
+        const intervalProp = plant.properties['Watering Interval (days)'] as PageProperty<'number'>;
+        const interval = intervalProp.number;
         return {
             ...acc,
             [interval]: acc[interval] ? [...acc[interval], name] : [name],
@@ -106,8 +109,8 @@ export async function getSchedule(ids: string[]) {
 }
 
 export async function getFrontPageSchedule() {
-    const plants = (await getPlants()).filter(
-        plant => (plant).properties['Last Watered'].date
+    const plants = (await getPlants() as Page[]).filter(
+        plant => getPlantDate(plant)
     );
     // sort oldest to newest
     plants.sort((a, b) => {
