@@ -9,18 +9,18 @@ const URL = `https://api.openweathermap.org/data/3.0/onecall?lat=${LAT}&lon=${LO
 
 interface WeatherData {
     current: {
-        weather: {
+        weather: Array<{
             id: number,
             main: string,
             description: string,
             icon: string
-        }[],
+        }>,
         [key: string]: any
     },
-    minutely: {
+    minutely: Array<{
         dt: number,
         precipitation: number
-    }[]
+    }>
 }
 
 export async function getWeather(): Promise<WeatherData> {
