@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router } from 'express'
 import { getPlantsMap, getSchedule } from '../notion-client/plantsTable.js';
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
     const plantsMap = await getPlantsMap();
     res.status(200).json(plantsMap);
 });
