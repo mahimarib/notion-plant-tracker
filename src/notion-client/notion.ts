@@ -15,14 +15,11 @@ export const plantsTable = {
             dead: process.env.DEAD_STATUS,
         },
     },
-    location: {
-        id: process.env.PLANTS_TABLE_LOCATION_ID,
-        select: {
-            myRoom: process.env.ROOM_LOCATION,
-            backyard: process.env.BACKYARD_LOCATION,
-        },
-    },
+    locationID: process.env.PLANTS_TABLE_LOCATION_ID,
+    groupID: process.env.PLANTS_TABLE_GROUP_ID
 };
+
+export type Location = 'my room' | 'backyard' | 'kitchen';
 
 export const waterLog = {
     id: process.env.WATER_LOG_ID,
