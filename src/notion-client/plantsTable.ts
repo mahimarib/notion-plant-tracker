@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { addToLog, WateringMethod } from './waterLog.js';
-import { limiter, notion, plantsTable } from './notion.js';
+import { limiter, Location, notion, plantsTable } from './notion.js';
 import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 
 export type Page = Extract<QueryDatabaseResponse['results'][number], { parent: {}}>;
@@ -35,7 +35,7 @@ export async function getPlantsOutside() {
                         },
                     },
                     {
-                        property: plantsTable.location.id,
+                        property: plantsTable.locationID,
                         select: {
                             equals: 'backyard',
                         },
@@ -44,6 +44,31 @@ export async function getPlantsOutside() {
             },
         })
     );
+    return plants;
+}
+
+export async function getPlantGroup(groupName: string) {
+    const { results: plants } = await limiter.schedule(() => 
+        notion.databases.query({
+            database_id: plantsTable.id,
+            filter: {
+                and: [
+                    {
+                        property: plantsTable.status.id,
+                        select: {
+                            equals: 'alive',
+                        },
+                    },
+                    {
+                        property: plantsTable.groupID,
+                        multi_select: {
+                            contains: groupName,
+                        },
+                    },
+                ],
+            }
+        })
+    )
     return plants;
 }
 
@@ -92,6 +117,19 @@ export async function updateLastWatered(pageID: string, method: WateringMethod) 
     const plantName = getPlantName(plantPage as Page);
     console.log(`edited: ${plantName}`);
     addToLog(plantPage.id, date, method);
+}
+
+export function updatePlantLocation(plantID: string, locationName: Location) {
+    limiter.schedule(() => notion.pages.update({
+        page_id: plantID,
+        properties: {
+            [plantsTable.locationID]: {
+                select: {
+                    name: locationName
+                }
+            }
+        }
+    }))
 }
 
 export async function getSchedule(ids: string[]) {
