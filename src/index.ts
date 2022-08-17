@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from 'express';
 import { readdirSync } from 'fs';
 import cron from 'node-cron';
+import path from "path";
+import { fileURLToPath } from "url";
 import { movePlants } from "./routes/movePlants.js";
 import { page } from './routes/page.js';
 import { plants } from './routes/plants.js';
@@ -30,7 +32,7 @@ export interface CronJob {
 }
 
 const jobFiles =
-    readdirSync('./src/cron-jobs')
+    readdirSync(path.join(path.dirname(fileURLToPath(import.meta.url)), './cron-jobs'))
         .filter(file => file.endsWith('.js'));
 
 jobFiles.forEach(async file => {
