@@ -133,7 +133,7 @@ export function updatePlantLocation(plantID: string, locationName: Location) {
 }
 
 export async function getSchedule(ids: string[]) {
-    const plants: Page[] = (await getPlants() as Page[]).filter((plant: Page) => ids.includes(plant.id));
+    const plants = (await getPlants() as Page[]).filter((plant: Page) => ids.includes(plant.id));
     const data: Record<string, string[]> = plants.reduce((acc, plant) => {
         const name = getPlantName(plant);
         const intervalProp = plant.properties['Watering Interval (days)'] as PageProperty<'number'>;
