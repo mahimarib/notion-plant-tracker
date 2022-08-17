@@ -10,10 +10,10 @@ import {
 import { WateringMethod } from '../notion-client/waterLog.js';
 import { getMinsOfRain, getWeather, isRaining } from '../weatherClient.js';
 
-export const job: CronJob = {
+const job: CronJob = {
     // runs every hour
     field: '0 * * * *',
-    run: async () => {
+    async run() {
         const weatherData = await getWeather();
         const minsOfRain = getMinsOfRain(weatherData);
         if (isRaining(weatherData) || minsOfRain >= 10) {
@@ -28,3 +28,5 @@ export const job: CronJob = {
         }
     }
 }
+
+export default job;

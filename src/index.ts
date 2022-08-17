@@ -26,16 +26,16 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`plant server running on http://zero-w.local:${port}`);
 });
 
-export interface CronJob {
+export type CronJob = {
     field: string,
-    run: () => void
+    run: () => unknown
 }
 
-const jobFiles =
+const jobsPromise =
     readdirSync(path.join(path.dirname(fileURLToPath(import.meta.url)), './cron-jobs'))
-        .filter(file => file.endsWith('.js'));
+        .filter(file => file.endsWith('.js'))
+        .map(async fName => (await import(`./cron-jobs/${fName}`)).default as CronJob);
 
-jobFiles.forEach(async file => {
-    const { field, run }: CronJob = await import(`./cron-jobs/${file}`);
-    cron.schedule(field, run);
-});
+Promise.all(jobsPromise).then(jobs => {
+    jobs.forEach(({ field, run }) => cron.schedule(field, run));
+})
