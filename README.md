@@ -26,7 +26,7 @@ Returns a JSON object containing a map of my plants. The shortcuts script will u
 }
 ```
 
-![plant selector menu](assets/plant-selection.jpg)
+<img src="assets/plant-selection.jpg" height="500px" >
 
 ## `/plants/schedule/:ids`
 
@@ -47,8 +47,7 @@ Returns a JSON object containing a key value pair of # of day -> array of plants
   ]
 }
 ```
-
-![reminders](assets/reminders.jpg)
+<img src="assets/reminders.jpg" height="500px" >
 
 ## `/water-plants/:ids`
 
